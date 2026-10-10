@@ -3,163 +3,138 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Блютус-чат без серверов</title>
+<title>Прямой чат</title>
 <style>
-:root{--bg:#0e1621;--panel:#17212b;--line:#0b121a;--me:#2b5278;--them:#182533;--txt:#f5f5f5;--dim:#7f91a4;--acc:#5eb5f7;--ok:#4fae4e;--bad:#e5524f}
-@media (prefers-color-scheme:light){:root{--bg:#cfe0ee;--panel:#fff;--line:#dbe4ec;--me:#d4ecff;--them:#fff;--txt:#17212b;--dim:#6b7c8c;--acc:#2481cc}}
-*{box-sizing:border-box}
+:root{--bg:#f3f6f4;--ink:#16221d;--mute:#5d6b65;--card:#fff;--line:#d3ddd8;--acc:#0b7a5a;--accInk:#fff;--me:#0b7a5a;--them:#e4ece8;
+--font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;box-sizing:border-box}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#101815;--ink:#e6efeb;--mute:#93a39b;--card:#18231e;--line:#2b3b34;--acc:#3fc79a;--accInk:#06231a;--me:#1f8f6c;--them:#233229}}
+*{box-sizing:inherit}
 html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--txt);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
-header{background:var(--panel);padding:10px 14px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line)}
-.av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#5eb5f7,#2b6cb0);display:grid;place-items:center;font-weight:700;color:#fff}
-header b{display:block}
-#st{font-size:13px;color:var(--dim)}
-#st.on{color:var(--acc)}
-header button{margin-left:auto}
-button{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:9px 14px;font:inherit;cursor:pointer}
-button.ghost{background:transparent;color:var(--acc);border:1px solid var(--acc)}
-button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
-#log{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:6px}
-.m{max-width:min(80%,520px);padding:7px 11px;border-radius:14px;background:var(--them);overflow-wrap:anywhere;white-space:pre-wrap}
-.m.me{align-self:flex-end;background:var(--me);border-bottom-right-radius:4px}
-.m:not(.me){border-bottom-left-radius:4px}
-.m small{display:block;color:var(--dim);font-size:11px;text-align:right}
-.sys{align-self:center;color:var(--dim);font-size:13px;text-align:center;max-width:90%}
-form{background:var(--panel);display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px))}
-input,textarea{flex:1;min-width:0;background:var(--bg);color:var(--txt);border:1px solid var(--line);border-radius:20px;padding:10px 14px;font:inherit}
-textarea{border-radius:10px;width:100%;height:90px;font:12px monospace;resize:vertical}
-form button{border-radius:50%;width:42px;height:42px;padding:0}
-dialog{background:var(--panel);color:var(--txt);border:0;border-radius:14px;width:min(94vw,480px);padding:18px;max-height:90vh;overflow:auto}
-dialog::backdrop{background:#0009}
-h2{margin:0 0 10px;font-size:18px}
-.tabs{display:flex;gap:8px;margin-bottom:12px}
-.tabs button{flex:1;background:transparent;color:var(--dim);border:1px solid var(--line)}
-.tabs button.a{color:var(--txt);border-color:var(--acc)}
-.pane{display:none;flex-direction:column;gap:10px}
-.pane.a{display:flex}
-.hint{font-size:13px;color:var(--dim);margin:0}
-.row{display:flex;gap:8px;flex-wrap:wrap}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--font);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+main{max-width:560px;margin:0 auto;padding:20px 16px;display:flex;flex-direction:column;min-height:100%}
+h1{font-size:1.6rem;margin:0 0 4px}
+p{margin:.4em 0;color:var(--mute)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-top:14px}
+button{font:inherit;font-weight:600;background:var(--acc);color:var(--accInk);border:0;border-radius:8px;padding:11px 16px;cursor:pointer}
+button.alt{background:transparent;color:var(--acc);border:1px solid var(--acc)}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+textarea,input{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px}
+textarea{height:110px;font-family:ui-monospace,Menlo,monospace;font-size:12px;word-break:break-all}
+.hide{display:none!important}
+#chat{flex:1;display:flex;flex-direction:column;min-height:0;margin-top:14px}
+#log{flex:1;min-height:55vh;max-height:65vh;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:4px 0}
+.m{max-width:80%;padding:8px 12px;border-radius:14px;white-space:pre-wrap;word-break:break-word}
+.m.me{align-self:flex-end;background:var(--me);color:#fff;border-bottom-right-radius:4px}
+.m.them{align-self:flex-start;background:var(--them);border-bottom-left-radius:4px}
+.m.sys{align-self:center;color:var(--mute);font-size:.85rem}
+#send{display:flex;gap:8px;margin-top:10px}
+#status{font-size:.9rem;color:var(--mute);margin-top:8px}
 </style>
 </head>
 <body>
-<header>
-  <div class="av" id="av">?</div>
-  <div><b id="nm">Не подключено</b><span id="st">нет соединения</span></div>
-  <button id="open">Подключить</button>
-</header>
-<div id="log"><div class="sys">Нажмите «Подключить», чтобы начать чат.<br>Серверов нет: сообщения идут напрямую между устройствами.</div></div>
-<form id="f">
-  <input id="t" placeholder="Сообщение" autocomplete="off" disabled>
-  <button disabled id="send" aria-label="Отправить">➤</button>
-</form>
+<main>
+  <h1>Прямой чат</h1>
+  <p>Переписка между двумя устройствами напрямую, без сервера. Работает в любом современном браузере: Android, iPhone, компьютер.</p>
 
-<dialog id="dlg">
-  <h2>Подключение</h2>
-  <input id="me" placeholder="Ваше имя" maxlength="24" style="width:100%;margin-bottom:12px">
-  <div class="tabs">
-    <button class="a" data-p="ble">Bluetooth</button>
-    <button data-p="rtc">Напрямую (Wi‑Fi)</button>
-  </div>
-
-  <div class="pane a" id="ble">
-    <p class="hint">Web Bluetooth подключается к BLE‑устройству с сервисом Nordic UART (ESP32, nRF, Adafruit Bluefruit, приложение nRF Connect и т.п.). Работает в Chrome/Edge на Android, Windows, macOS, Linux. В iPhone Safari недоступно.</p>
-    <button id="bleGo">Найти устройство</button>
-  </div>
-
-  <div class="pane" id="rtc">
-    <p class="hint">Без серверов: обменяйтесь двумя кодами вручную (в мессенджере, QR, голосом). Оба устройства должны быть в одной Wi‑Fi сети или раздаче с телефона.</p>
-    <div class="row">
-      <button id="mk">1. Я создаю чат</button>
-      <button class="ghost" id="jn">2. Я присоединяюсь</button>
+  <section id="setup">
+    <div class="card">
+      <strong>Первый телефон</strong>
+      <p>Создайте код и отправьте его второму телефону любым способом: мессенджер, SMS, обмен по Bluetooth.</p>
+      <div class="row"><button id="mk">Создать код приглашения</button></div>
+      <div id="offerBox" class="hide">
+        <textarea id="offer" readonly></textarea>
+        <div class="row"><button class="alt" data-copy="offer">Скопировать код</button></div>
+        <p>Когда второй телефон пришлёт ответный код, вставьте его сюда:</p>
+        <textarea id="ansIn" placeholder="Ответный код"></textarea>
+        <div class="row"><button id="fin">Подключиться</button></div>
+      </div>
     </div>
-    <label class="hint" id="l1">Ваш код — отправьте собеседнику:</label>
-    <textarea id="mine" readonly></textarea>
-    <button class="ghost" id="cp">Скопировать</button>
-    <label class="hint">Код собеседника — вставьте сюда:</label>
-    <textarea id="theirs"></textarea>
-    <button id="ok">Соединить</button>
-  </div>
-  <p class="hint" id="err" style="color:var(--bad);margin-top:10px"></p>
-  <button class="ghost" id="close" style="margin-top:8px">Закрыть</button>
-</dialog>
+
+    <div class="card">
+      <strong>Второй телефон</strong>
+      <p>Вставьте код приглашения от первого телефона.</p>
+      <textarea id="offIn" placeholder="Код приглашения"></textarea>
+      <div class="row"><button id="join">Создать ответный код</button></div>
+      <div id="answerBox" class="hide">
+        <textarea id="answer" readonly></textarea>
+        <div class="row"><button class="alt" data-copy="answer">Скопировать ответ</button></div>
+        <p>Отправьте этот код первому телефону. Соединение откроется само.</p>
+      </div>
+    </div>
+    <div id="status" role="status"></div>
+  </section>
+
+  <section id="chat" class="hide">
+    <div id="log" aria-live="polite"></div>
+    <form id="send">
+      <input id="msg" autocomplete="off" placeholder="Сообщение" aria-label="Сообщение">
+      <button type="submit">Отправить</button>
+    </form>
+  </section>
+</main>
 
 <script>
-const $=s=>document.querySelector(s),log=$('#log'),dlg=$('#dlg');
-let send=null,peer='Собеседник',buf='',role='';
-try{$('#me').value=localStorage.getItem('name')||''}catch(e){}
-
-function sys(t){const d=document.createElement('div');d.className='sys';d.textContent=t;log.append(d);log.scrollTop=1e9}
-function bubble(txt,me){const d=document.createElement('div');d.className='m'+(me?' me':'');d.textContent=txt;
-  const s=document.createElement('small');s.textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});d.append(s);log.append(d);log.scrollTop=1e9}
-function online(name,how){
-  peer=name||'Собеседник';$('#nm').textContent=peer;$('#av').textContent=peer[0].toUpperCase();
-  $('#st').textContent='на связи · '+how;$('#st').className='on';
-  $('#t').disabled=$('#send').disabled=false;dlg.close();sys('Соединено: '+how);$('#t').focus()}
-function offline(){send=null;$('#st').textContent='соединение потеряно';$('#st').className='';
-  $('#t').disabled=$('#send').disabled=true;sys('Соединение разорвано')}
-function name(){const n=$('#me').value.trim()||'Аноним';try{localStorage.setItem('name',n)}catch(e){}return n}
-function got(line){ // line: "H|name" или "M|text"
-  if(line.startsWith('H|')){online(line.slice(2),role)}
-  else if(line.startsWith('M|'))bubble(line.slice(2),false)}
-
-$('#f').onsubmit=async e=>{e.preventDefault();const v=$('#t').value.trim();if(!v||!send)return;
-  try{await send('M|'+v+'\n');bubble(v,true);$('#t').value=''}catch(x){sys('Не отправлено: '+x.message)}};
-$('#open').onclick=()=>dlg.showModal();$('#close').onclick=()=>dlg.close();
-document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('.tabs button,.pane').forEach(x=>x.classList.remove('a'));
-  b.classList.add('a');$('#'+b.dataset.p).classList.add('a')});
-
-/* ---------- Bluetooth LE (Nordic UART) ---------- */
-const NUS='6e400001-b5a3-f393-e0a9-e50e24dcca9e',RX='6e400002-b5a3-f393-e0a9-e50e24dcca9e',TX='6e400003-b5a3-f393-e0a9-e50e24dcca9e';
-$('#bleGo').onclick=async()=>{
-  $('#err').textContent='';
-  if(!navigator.bluetooth){$('#err').textContent='Этот браузер не поддерживает Web Bluetooth. Откройте Chrome или Edge.';return}
-  try{
-    const n=name();
-    const dev=await navigator.bluetooth.requestDevice({filters:[{services:[NUS]}],optionalServices:[NUS]});
-    dev.addEventListener('gattserverdisconnected',offline);
-    const srv=await dev.gatt.connect(),svc=await srv.getPrimaryService(NUS);
-    const rx=await svc.getCharacteristic(RX),tx=await svc.getCharacteristic(TX);
-    await tx.startNotifications();
-    const dec=new TextDecoder();
-    tx.addEventListener('characteristicvaluechanged',ev=>{
-      buf+=dec.decode(ev.target.value);let i;
-      while((i=buf.indexOf('\n'))>=0){const l=buf.slice(0,i).replace(/\r$/,'');buf=buf.slice(i+1);if(l)got(l)}});
-    const enc=new TextEncoder();
-    send=async s=>{const b=enc.encode(s);for(let i=0;i<b.length;i+=20){await rx.writeValueWithoutResponse(b.slice(i,i+20));await new Promise(r=>setTimeout(r,15))}};
-    role='Bluetooth';
-    await send('H|'+n+'\n');
-    online(dev.name||'BLE‑устройство','Bluetooth');
-  }catch(e){$('#err').textContent=e.name==='NotFoundError'?'Устройство не выбрано.':'Ошибка: '+e.message}};
-
-/* ---------- WebRTC без сервера (ручной обмен кодами) ---------- */
+const $=id=>document.getElementById(id);
 let pc,dc;
-const enc64=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
-const dec64=s=>JSON.parse(decodeURIComponent(escape(atob(s.trim()))));
-function mkPc(){
-  pc=new RTCPeerConnection({iceServers:[]});
-  pc.onconnectionstatechange=()=>{if(['failed','disconnected','closed'].includes(pc.connectionState))offline()};
-  return pc}
-function ready(c){dc=c;
-  dc.onopen=()=>{send=async s=>dc.send(s);role='Wi‑Fi (P2P)';send('H|'+name()+'\n')};
-  dc.onmessage=e=>String(e.data).split('\n').forEach(l=>l&&got(l))}
-function gathered(){return new Promise(r=>{if(pc.iceGatheringState==='complete')return r();
-  pc.onicegatheringstatechange=()=>pc.iceGatheringState==='complete'&&r();setTimeout(r,4000)})}
-$('#mk').onclick=async()=>{$('#err').textContent='';name();mkPc();ready(pc.createDataChannel('chat'));
-  await pc.setLocalDescription(await pc.createOffer());await gathered();
-  $('#mine').value=enc64(pc.localDescription);$('#l1').textContent='Код для собеседника (отправьте ему):';
-  $('#ok').dataset.m='host'};
-$('#jn').onclick=()=>{$('#err').textContent='';name();$('#ok').dataset.m='guest';$('#mine').value='';
-  $('#l1').textContent='После вставки кода собеседника здесь появится ваш ответный код:'};
-$('#ok').onclick=async()=>{
-  try{const m=$('#ok').dataset.m;if(!m)throw Error('Сначала выберите шаг 1 или 2');
-    const d=dec64($('#theirs').value);
-    if(m==='host'){await pc.setRemoteDescription(d)}
-    else{mkPc();pc.ondatachannel=e=>ready(e.channel);await pc.setRemoteDescription(d);
-      await pc.setLocalDescription(await pc.createAnswer());await gathered();
-      $('#mine').value=enc64(pc.localDescription);$('#err').textContent='Отправьте этот ответный код создателю чата.';$('#err').style.color='var(--dim)'}
-  }catch(e){$('#err').style.color='var(--bad)';$('#err').textContent='Не удалось: '+e.message}};
-$('#cp').onclick=()=>{$('#mine').select();try{navigator.clipboard.writeText($('#mine').value)}catch(e){document.execCommand('copy')}};
+const enc=d=>btoa(unescape(encodeURIComponent(JSON.stringify(d))));
+const dec=s=>JSON.parse(decodeURIComponent(escape(atob(s.replace(/\s+/g,'')))));
+const status=t=>$('status').textContent=t;
+
+function newPc(){
+  pc=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
+  pc.ondatachannel=e=>setup(e.channel);
+  pc.onconnectionstatechange=()=>{
+    if(['failed','disconnected','closed'].includes(pc.connectionState)) add('Соединение потеряно. Создайте код заново.','sys');
+  };
+}
+function ice(){
+  return new Promise(r=>{
+    if(pc.iceGatheringState==='complete')return r();
+    pc.onicegatheringstatechange=()=>pc.iceGatheringState==='complete'&&r();
+    setTimeout(r,5000);
+  });
+}
+function setup(ch){
+  dc=ch;
+  dc.onopen=()=>{$('setup').classList.add('hide');$('chat').classList.remove('hide');add('Подключено','sys');$('msg').focus()};
+  dc.onmessage=e=>add(e.data,'them');
+  dc.onclose=()=>add('Собеседник отключился','sys');
+}
+function add(t,c){
+  const d=document.createElement('div');d.className='m '+c;d.textContent=t;
+  $('log').appendChild(d);$('log').scrollTop=1e9;
+}
+
+$('mk').onclick=async()=>{
+  try{
+    status('Создаю код…');newPc();setup(pc.createDataChannel('chat'));
+    await pc.setLocalDescription(await pc.createOffer());await ice();
+    $('offer').value=enc(pc.localDescription);$('offerBox').classList.remove('hide');status('');
+  }catch(e){status('Ошибка: '+e.message)}
+};
+$('join').onclick=async()=>{
+  try{
+    status('Создаю ответ…');newPc();
+    await pc.setRemoteDescription(dec($('offIn').value));
+    await pc.setLocalDescription(await pc.createAnswer());await ice();
+    $('answer').value=enc(pc.localDescription);$('answerBox').classList.remove('hide');status('');
+  }catch(e){status('Неверный код приглашения. Скопируйте его целиком.')}
+};
+$('fin').onclick=async()=>{
+  try{await pc.setRemoteDescription(dec($('ansIn').value));status('Соединяю…')}
+  catch(e){status('Неверный ответный код. Скопируйте его целиком.')}
+};
+document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=async()=>{
+  const t=$(b.dataset.copy);t.select();
+  try{await navigator.clipboard.writeText(t.value)}catch(e){document.execCommand('copy')}
+  b.textContent='Скопировано';setTimeout(()=>b.textContent=b.dataset.copy==='offer'?'Скопировать код':'Скопировать ответ',1500);
+});
+$('send').onsubmit=e=>{
+  e.preventDefault();const v=$('msg').value.trim();
+  if(!v||!dc||dc.readyState!=='open')return;
+  dc.send(v);add(v,'me');$('msg').value='';
+};
 </script>
 </body>
 </html>
